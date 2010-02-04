@@ -9,6 +9,8 @@ use Plack::Util;
 use HTTP::Status;
 use URI::Escape;
 
+my %_sockets;
+
 sub new {
     my($class, %args) = @_;
     bless {%args}, $class;
@@ -23,6 +25,12 @@ sub register_service {
         connection_class => 'Plack::Handler::AnyEvent::HTTPD::Connection',
         request_timeout => $self->{request_timeout},
     );
+
+    $httpd->reg_cb(client_disconnected => sub {
+        my($httpd, $host, $port) = @_;
+        delete $_sockets{join(":", $host, $port)};
+    });
+
     $httpd->reg_cb(
         '' => sub {
             my($httpd, $req) = @_;
@@ -49,6 +57,7 @@ sub register_service {
                     open my $input, "<", \(defined $req->content ? $req->content : '');
                     $input;
                 },
+                'psgix.io'          => $_sockets{join(":", $req->client_host, $req->client_port)},
             };
 
             my $hdr = $req->headers;
@@ -78,6 +87,7 @@ sub register_service {
                     }
 
                     $req->respond([ @res, $content ]);
+                    delete $_sockets{join(":", $req->client_host, $req->client_port)};
 
                     return;
                 } else {
@@ -123,6 +133,10 @@ use parent qw(AnyEvent::HTTPD::HTTPConnection);
 # Don't parse content
 sub handle_request {
     my($self, $method, $uri, $hdr, $cont) = @_;
+
+    Scalar::Util::weaken(
+        $_sockets{join(":", $self->{host}, $self->{port})} = $self->{hdl}->{fh}
+    );
 
     $self->{keep_alive} = ($hdr->{connection} =~ /keep-alive/io);
     $self->event(request => $method, $uri, $hdr, $cont);
