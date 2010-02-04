@@ -77,6 +77,8 @@ sub register_service {
                     }
 
                     $req->respond([ @res, $content ]);
+
+                    return;
                 } else {
                     # Probably unnecessary, but in case ->write is
                     # called before the poll callback is execute.
