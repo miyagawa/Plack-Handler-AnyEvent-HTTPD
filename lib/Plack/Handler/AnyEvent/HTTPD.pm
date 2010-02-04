@@ -27,17 +27,15 @@ sub register_service {
         '' => sub {
             my($httpd, $req) = @_;
 
-            my($path, $query) = split /\?/, $req->{url}, 2;
-
             my $env = {
                 REMOTE_ADDR         => $req->client_host,
                 SERVER_PORT         => $httpd->port,
                 SERVER_NAME         => $httpd->host,
                 SCRIPT_NAME         => '',
                 REQUEST_METHOD      => $req->method,
-                PATH_INFO           => URI::Escape::uri_unescape($path),
-                REQUEST_URI         => $req->{url},
-                QUERY_STRING        => $query,
+                PATH_INFO           => URI::Escape::uri_unescape($req->{url}->path),
+                REQUEST_URI         => $req->{url}->as_string,
+                QUERY_STRING        => $req->{url}->query,
                 SERVER_PROTOCOL     => 'HTTP/1.0', # no way to get this from HTTPConnection
                 'psgi.version'      => [ 1, 1 ],
                 'psgi.errors'       => *STDERR,
@@ -47,7 +45,10 @@ sub register_service {
                 'psgi.run_once'     => Plack::Util::FALSE,
                 'psgi.multithread'  => Plack::Util::FALSE,
                 'psgi.multiprocess' => Plack::Util::FALSE,
-                'psgi.input'        => do { open my $input, "<", \($req->content || ''); $input },
+                'psgi.input'        => do {
+                    open my $input, "<", \(defined $req->content ? $req->content : '');
+                    $input;
+                },
             };
 
             my $hdr = $req->headers;
