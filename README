@@ -1,0 +1,21 @@
+NAME
+    Plack::Handler::AnyEvent::HTTPD - Plack handler to run PSGI apps on
+    AnyEvent::HTTPD
+
+SYNOPSIS
+      plackup -s AnyEvent::HTTPD --port 9090
+
+DESCRIPTION
+    Plack::Handler::AnyEvent::HTTPD is a Plack handler to run PSGI apps on
+    AnyEvent::HTTPD module.
+
+AUTHOR
+    Tatsuhiko Miyagawa <miyagawa@bulknews.net>
+
+LICENSE
+    This library is free software; you can redistribute it and/or modify it
+    under the same terms as Perl itself.
+
+SEE ALSO
+    AnyEvent::HTTPD
+
