@@ -57,7 +57,7 @@ sub register_service {
                     open my $input, "<", \(defined $req->content ? $req->content : '');
                     $input;
                 },
-                'psgix.io'          => $_sockets{join(":", $req->client_host, $req->client_port)},
+                'psgix.io'          => delete $_sockets{join(":", $req->client_host, $req->client_port)},
             };
 
             my $hdr = $req->headers;
@@ -87,7 +87,6 @@ sub register_service {
                     }
 
                     $req->respond([ @res, $content ]);
-                    delete $_sockets{join(":", $req->client_host, $req->client_port)};
 
                     return;
                 } else {
