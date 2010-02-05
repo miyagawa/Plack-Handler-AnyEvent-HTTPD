@@ -114,7 +114,11 @@ sub handle_psgi_request {
     my $respond = sub {
         my $res = shift;
 
-        my @res = ($res->[0], HTTP::Status::status_message($res->[0]), {@{$res->[1]}});
+        my %headers;
+        while ( my($key, $val) = splice @{$res->[1]}, 0, 2) {
+            $headers{$key} = exists $headers{$key} ? "$headers{$key}, $val" : $val;
+        }
+        my @res = ($res->[0], HTTP::Status::status_message($res->[0]), \%headers);
 
         if (defined $res->[2]) {
             my $content;
@@ -189,6 +193,16 @@ Plack::Handler::AnyEvent::HTTPD - Plack handler to run PSGI apps on AnyEvent::HT
 =head1 DESCRIPTION
 
 Plack::Handler::AnyEvent::HTTPD is a Plack handler to run PSGI apps on AnyEvent::HTTPD module.
+
+=head1 LIMITATIONS
+
+=over 4
+
+=item *
+
+C<< $env->{SERVER_PROTOCOL} >> is always I<HTTP/1.0> regardless of the request version.
+
+=back
 
 =head1 AUTHOR
 
