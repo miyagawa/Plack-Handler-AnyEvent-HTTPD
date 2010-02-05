@@ -23,6 +23,12 @@ sub register_service {
         app  => $app,
     );
 
+    $self->{server_ready}->({
+        port => $httpd->port,
+        host => $httpd->host,
+        server_software => 'AnyEvent::HTTPD',
+    }) if $self->{server_ready};
+
     $self->{_httpd} = $httpd;
 }
 
