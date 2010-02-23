@@ -9,6 +9,10 @@ DESCRIPTION
     Plack::Handler::AnyEvent::HTTPD is a Plack handler to run PSGI apps on
     AnyEvent::HTTPD module.
 
+LIMITATIONS
+    *   "$env->{SERVER_PROTOCOL}" is always *HTTP/1.0* regardless of the
+        request version.
+
 AUTHOR
     Tatsuhiko Miyagawa <miyagawa@bulknews.net>
 
