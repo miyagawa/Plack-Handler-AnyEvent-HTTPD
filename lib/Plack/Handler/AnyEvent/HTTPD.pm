@@ -19,6 +19,7 @@ sub register_service {
     my $httpd = Plack::Handler::AnyEvent::HTTPD::Server->new(
         port => $self->{port} || 9000,
         host => $self->{host},
+        ssl => $self->{ssl},
         request_timeout => $self->{request_timeout},
         app  => $app,
     );
@@ -75,6 +76,8 @@ sub handle_psgi_request {
 
     my($path_info, $query) = split /\?/, $url, 2;
 
+    my $scheme = $self->{ssl} ? 'https' : 'http';
+
     my $env = {
         REMOTE_ADDR         => $con->{host},
         SERVER_PORT         => $self->port,
@@ -87,7 +90,7 @@ sub handle_psgi_request {
         SERVER_PROTOCOL     => 'HTTP/1.0', # no way to get this from HTTPConnection
         'psgi.version'      => [ 1, 1 ],
         'psgi.errors'       => *STDERR,
-        'psgi.url_scheme'   => 'http',
+        'psgi.url_scheme'   => $scheme,
         'psgi.nonblocking'  => Plack::Util::TRUE,
         'psgi.streaming'    => Plack::Util::TRUE,
         'psgi.run_once'     => Plack::Util::FALSE,
@@ -193,6 +196,20 @@ Plack::Handler::AnyEvent::HTTPD - Plack handler to run PSGI apps on AnyEvent::HT
 =head1 DESCRIPTION
 
 Plack::Handler::AnyEvent::HTTPD is a Plack handler to run PSGI apps on AnyEvent::HTTPD module.
+
+=head1 HTTPS SUPPORT
+
+You can easily enable serving over HTTPS
+
+    my $server = Plack::Handler::AnyEvent::HTTPD->new(
+        host => '127.0.0.1',
+        port => 443,
+        ssl => {
+            key_file => 'certs/testkey.pem',
+            cert_file => 'certs/testcert.pem',
+        },
+    );
+    $server->run($app);
 
 =head1 LIMITATIONS
 
