@@ -2,7 +2,7 @@ package Plack::Handler::AnyEvent::HTTPD;
 
 use strict;
 use 5.008_001;
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 use Plack::Util;
 use HTTP::Status;
