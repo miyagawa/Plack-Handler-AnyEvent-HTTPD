@@ -1,4 +1,7 @@
 Revision history for Perl extension Plack::Handler::AnyEvent::HTTPD
 
+0.02  Wed Aug  8 09:07:44 PDT 2012
+      - Fixed warnings (mschilli)
+
 0.01  Wed Feb  3 18:02:45 2010
-        - original version
+      - original version
