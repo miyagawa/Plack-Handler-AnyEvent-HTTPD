@@ -194,6 +194,24 @@ Plack::Handler::AnyEvent::HTTPD - Plack handler to run PSGI apps on AnyEvent::HT
 
 Plack::Handler::AnyEvent::HTTPD is a Plack handler to run PSGI apps on AnyEvent::HTTPD module.
 
+=head1 FEATURES
+
+It's a handler running on L<AnyEvent::HTTPD> so it inherits all the
+features from that, but the implementation is a bit tweaked to bypass
+some restrictions that AnyEvent::HTTPD has, i.e.:
+
+=over 4
+
+=item *
+
+AnyEvent::HTTPD only supports GET and POST but this handler supports other methods too.
+
+=item *
+
+AnyEvent::HTTPD processes C<x-www-form-urlencoded> and
+C<multipart/form-data> but this handler turns off that processing and
+just pushes the buffered content to C<psgi.input>
+
 =head1 LIMITATIONS
 
 =over 4
