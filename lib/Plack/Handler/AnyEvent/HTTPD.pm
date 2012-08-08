@@ -169,7 +169,9 @@ use parent qw(AnyEvent::HTTPD::HTTPConnection);
 sub handle_request {
     my($self, $method, $uri, $hdr, $cont) = @_;
 
-    $self->{keep_alive} = ($hdr->{connection} =~ /keep-alive/io);
+    if( $hdr->{connection} ) {
+        $self->{keep_alive} = ($hdr->{connection} =~ /keep-alive/io);
+    }
     $self->event(request => $method, $uri, $hdr, $cont);
 }
 
